@@ -132,4 +132,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). All PRs welcome!
 
 ## License
 
-MIT © 2026 salubrious contributors
+Salubrious License v1.0 © 2026 Mohammad Hossein Alikhani
+
+See [LICENSE](LICENSE) for details. This license protects the salubrious brand and the novelty of its dependency health signal taxonomy while remaining free for use, modification, and contribution.

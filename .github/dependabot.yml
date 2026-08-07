@@ -1,0 +1,40 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "MHAlikhani"
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      dev-dependencies:
+        patterns:
+          - "@types/*"
+          - "typescript"
+          - "tsup"
+          - "vitest"
+          - "biome"
+          - "tsx"
+        update-types:
+          - "minor"
+          - "patch"
+      dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    ignore:
+      - dependency-name: "typescript"
+        versions: ["8.x"]

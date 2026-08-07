@@ -2,8 +2,8 @@
   "name": "salubrious",
   "version": "0.0.0",
   "description": "Know the health of your dependency tree before it kills your build.",
-  "author": "Your Name <you@example.com>",
-  "license": "MIT",
+  "author": "Mohammad Hossein Alikhani <mohammad.hossein.alikhani@gmail.com>",
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "exports": {
     ".": {

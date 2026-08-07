@@ -1,0 +1,30 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Custom for Visual Studio
+*.cs     text diff=csharp
+*.vb     text diff=vbnet
+
+# Standard text files
+*.md     text
+*.txt    text
+*.json   text
+*.yml    text
+*.yaml   text
+*.ts     text
+*.tsx    text
+*.js     text
+*.mjs    text
+*.cjs    text
+
+# Binary files
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.eot    binary
+*.svg    binary

@@ -1,0 +1,27 @@
+# CODEOWNERS
+# These users will be automatically requested for review when someone
+# opens a pull request modifying these files.
+
+# Global owners
+* @MHAlikhani
+
+# Core library
+/src/core/ @MHAlikhani
+/src/signals/ @MHAlikhani
+/src/utils/ @MHAlikhani
+
+# Configuration
+/package.json @MHAlikhani
+/tsconfig.json @MHAlikhani
+/tsup.config.ts @MHAlikhani
+/biome.json @MHAlikhani
+/vitest.config.ts @MHAlikhani
+
+# Documentation
+/README.md @MHAlikhani
+/CHANGELOG.md @MHAlikhani
+/CONTRIBUTING.md @MHAlikhani
+/LICENSE @MHAlikhani
+
+# CI/CD
+/.github/ @MHAlikhani

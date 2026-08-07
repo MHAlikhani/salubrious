@@ -38,6 +38,10 @@ git push origin main
 # GitHub Action publishes to npm
 ```
 
+## License & Contributions
+
+By contributing, you agree that your contributions will be licensed under the [Salubrious License v1.0](LICENSE), which protects the project's brand and novelty while remaining free for all uses.
+
 ## Code of Conduct
 
 [Contributor Covenant 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/)
