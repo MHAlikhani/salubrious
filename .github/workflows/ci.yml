@@ -1,0 +1,20 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [18, 20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ matrix.node }}, cache: 'pnpm' }
+      - run: corepack enable pnpm && pnpm install --frozen-lockfile
+      - run: pnpm run lint
+      - run: pnpm run typecheck
+      - run: pnpm run test
+      - run: pnpm run build
+      - uses: actions/upload-artifact@v4
+        if: matrix.node == '20'
+        with: { name: dist, path: dist/, retention-days: 1 }

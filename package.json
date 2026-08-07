@@ -1,0 +1,80 @@
+{
+  "name": "salubrious",
+  "version": "0.0.0",
+  "description": "Know the health of your dependency tree before it kills your build.",
+  "author": "Your Name <you@example.com>",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./cli": {
+      "types": "./dist/cli.d.ts",
+      "import": "./dist/cli.mjs",
+      "require": "./dist/cli.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "salubrious": "./dist/cli.mjs"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm run build",
+    "release": "changeset version && pnpm install && pnpm run build && changeset publish",
+    "prepare": "pnpm run build"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/salubrious/salubrious.git"
+  },
+  "bugs": {
+    "url": "https://github.com/salubrious/salubrious/issues"
+  },
+  "homepage": "https://github.com/salubrious/salubrious#readme",
+  "keywords": [
+    "dependency",
+    "health",
+    "security",
+    "audit",
+    "maintenance",
+    "abandoned",
+    "supply-chain",
+    "cli"
+  ],
+  "devDependencies": {
+    "@types/node": "^26.6.1",
+    "@vitest/coverage-v8": "^5.0.1",
+    "biome": "^0.3.3",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.1"
+  },
+  "packageManager": "pnpm@12.4.2"
+}

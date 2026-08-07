@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+.vigor-cache/
+*.log
+.DS_Store
+*.tgz
+.env
+.env.local
+.vscode/*
+!.vscode/settings.json

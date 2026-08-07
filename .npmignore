@@ -1,0 +1,14 @@
+test/
+docs/
+.github/
+.vscode/
+.changeset/
+*.md
+!README.md
+!CHANGELOG.md
+!LICENSE
+tsconfig.json
+tsup.config.ts
+biome.json
+vitest.config.ts
+.gitignore

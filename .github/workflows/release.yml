@@ -1,0 +1,25 @@
+name: Release
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  pull-requests: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', registry-url: 'https://registry.npmjs.org' }
+      - run: corepack enable pnpm && pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - run: pnpm run test
+      - uses: changesets/action@v1
+        with: { publish: pnpm run publish }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

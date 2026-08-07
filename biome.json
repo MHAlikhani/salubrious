@@ -1,0 +1,6 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9/schema.json",
+  "formatter": { "enabled": true, "indentStyle": "tab", "lineWidth": 100 },
+  "linter": { "enabled": true, "rules": { "recommended": true, "style": { "noNonNullAssertion": "off" } } },
+  "javascript": { "formatter": { "semicolons": "always", "trailingCommas": "es5" } }
+}
