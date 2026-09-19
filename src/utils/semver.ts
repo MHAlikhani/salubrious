@@ -11,12 +11,14 @@ export function parseVersion(version: string): ParsedVersion | null {
     /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/
   );
   if (!match) return null;
+  const [, major, minor, patch, prerelease, build] = match;
+  if (major === undefined || minor === undefined || patch === undefined) return null;
   return {
-    major: parseInt(match[1], 10),
-    minor: parseInt(match[2], 10),
-    patch: parseInt(match[3], 10),
-    prerelease: match[4],
-    build: match[5],
+    major: parseInt(major, 10),
+    minor: parseInt(minor, 10),
+    patch: parseInt(patch, 10),
+    prerelease,
+    build,
   };
 }
 

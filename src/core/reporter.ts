@@ -1,3 +1,4 @@
+import { getVersion } from '../constants.js';
 import type { SalubriousResult, PackageResult, Grade } from './types.js';
 
 const GRADE_COLORS: Record<Grade, string> = {
@@ -152,6 +153,8 @@ function formatMarkdown(result: SalubriousResult): string {
 }
 
 function formatSarif(result: SalubriousResult): string {
+  const rules: unknown[] = [];
+  const results: unknown[] = [];
   const sarif = {
     version: '2.1.0',
     $schema: 'https://json.schemastore.org/sarif-2.1.0.json',
@@ -160,12 +163,12 @@ function formatSarif(result: SalubriousResult): string {
         tool: {
           driver: {
             name: 'salubrious',
-            version: '0.0.0',
+            version: getVersion(),
             informationUri: 'https://github.com/MHAlikhani/salubrious',
-            rules: [] as unknown[],
+            rules,
           },
         },
-        results: [] as unknown[],
+        results,
       },
     ],
   };
@@ -182,7 +185,7 @@ function formatSarif(result: SalubriousResult): string {
         });
       }
 
-      sarif.runs[0].results.push({
+      results.push({
         ruleId: signal.id,
         level: signal.severity === 'error' ? 'error' : signal.severity === 'warning' ? 'warning' : 'note',
         message: { text: `${pkg.name}@${pkg.version}: ${signal.message}` },
@@ -205,13 +208,15 @@ function formatSarif(result: SalubriousResult): string {
     }
   }
 
-  sarif.runs[0].tool.driver.rules = Array.from(ruleMap.values()).map((r) => ({
-    id: r.id,
-    name: r.name,
-    shortDescription: { text: r.description },
-    fullDescription: { text: r.description },
-    defaultConfiguration: { level: 'warning' },
-  }));
+  rules.push(
+    ...Array.from(ruleMap.values()).map((r) => ({
+      id: r.id,
+      name: r.name,
+      shortDescription: { text: r.description },
+      fullDescription: { text: r.description },
+      defaultConfiguration: { level: 'warning' },
+    }))
+  );
 
   return JSON.stringify(sarif, null, 2);
 }

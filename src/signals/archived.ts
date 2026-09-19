@@ -1,5 +1,5 @@
 import { signalRegistry, createSignalResult } from './signal-registry.js';
-import { githubClient } from '../core/github.js';
+import { GitHubClient, githubClient } from '../core/github.js';
 import type { SignalDefinition, SalubriousOptions, PackageMetadata } from '../core/types.js';
 import { SIGNAL_WEIGHTS } from '../constants.js';
 
@@ -11,7 +11,7 @@ signalRegistry.register({
     const repoUrl = pkg.repository?.url ?? pkg.homepage;
     if (!repoUrl) return null;
 
-    const parsed = githubClient.parseRepoUrl(repoUrl);
+    const parsed = GitHubClient.parseRepoUrl(repoUrl);
     if (!parsed) return null;
 
     const isArchived = await githubClient.isArchived(parsed.owner, parsed.repo);

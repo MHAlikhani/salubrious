@@ -1,6 +1,6 @@
 {
   "name": "salubrious",
-  "version": "0.1.1",
+  "version": "0.1.5",
   "description": "Know the health of your dependency tree before it kills your build.",
   "author": "Mohammad Hossein Alikhani <mohammad.hossein.alikhani@gmail.com>",
   "license": "MIT",
@@ -9,15 +9,15 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.cjs"
     },
     "./cli": {
-      "types": "./dist/cli.d.ts",
+      "types": "./dist/cli/index.d.ts",
       "import": "./dist/cli.mjs",
       "require": "./dist/cli.cjs"
     }
   },
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
@@ -30,7 +30,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && tsc -p tsconfig.json --emitDeclarationOnly",
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",

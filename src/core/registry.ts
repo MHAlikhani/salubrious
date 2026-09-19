@@ -4,7 +4,7 @@ import { DEFAULT_REGISTRY } from '../constants.js';
 
 export class RegistryClient {
   private readonly client: HttpClient;
-  private readonly baseUrl: string;
+  private baseUrl: string;
 
   constructor(registry?: string, httpClient?: HttpClient) {
     this.baseUrl = (registry ?? DEFAULT_REGISTRY).replace(/\/+$/, '');

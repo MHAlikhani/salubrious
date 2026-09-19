@@ -3,8 +3,11 @@ import { defineConfig } from 'tsup';
 export default defineConfig([
   // Library - dual CJS/ESM
   {
-    entry: ['src/index.ts'],
+    entry: { index: 'src/index.ts' },
     format: ['cjs', 'esm'],
+    // Declarations are emitted by the `tsc --emitDeclarationOnly` step of the build
+    // script: typescript@7 does not expose the JS compiler API that tsup's dts
+    // bundler (rollup-plugin-dts) needs.
     dts: false,
     sourcemap: true,
     clean: true,
@@ -20,7 +23,7 @@ export default defineConfig([
   },
   // CLI - ESM (has top-level await)
   {
-    entry: ['src/cli/index.ts'],
+    entry: { cli: 'src/cli/index.ts' },
     format: ['esm'],
     dts: false,
     sourcemap: true,

@@ -1,8 +1,22 @@
+import { readFileSync } from 'node:fs';
+
 export const PACKAGE_NAME = 'salubrious' as const;
 
-export async function getVersion(): Promise<string> {
-  // Version is injected at build time via package.json
-  return '0.1.1';
+const FALLBACK_VERSION = '0.0.0';
+
+let resolvedVersion: string | null = null;
+
+/** Reads the version from the package.json shipped next to the built bundle. */
+export function getVersion(): string {
+  if (resolvedVersion !== null) return resolvedVersion;
+  try {
+    const raw = readFileSync(new URL('../package.json', import.meta.url), 'utf-8');
+    const pkg = JSON.parse(raw) as { version?: string };
+    resolvedVersion = pkg.version ?? FALLBACK_VERSION;
+  } catch {
+    resolvedVersion = FALLBACK_VERSION;
+  }
+  return resolvedVersion;
 }
 
 export const DEFAULT_REGISTRY = 'https://registry.npmjs.org' as const;

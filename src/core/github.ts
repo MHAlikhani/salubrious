@@ -62,7 +62,11 @@ export class GitHubClient {
     for (const pattern of patterns) {
       const match = url.match(pattern);
       if (match) {
-        return { owner: match[1], repo: match[2] };
+        const owner = match[1];
+        const repo = match[2];
+        if (owner && repo) {
+          return { owner, repo };
+        }
       }
     }
     return null;

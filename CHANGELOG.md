@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2026-09-19
+
+### Fixed
+- **Package entry points**: `main` and `exports["."].require` pointed at `./dist/index.js`, which the build never emitted. They now resolve to `./dist/index.cjs`.
+- **Type declarations**: no `.d.ts` file was ever published, so TypeScript consumers got nothing. Declarations are now emitted for both entry points (`dist/index.d.ts`, `dist/cli/index.d.ts`).
+- **CLI bundle overwrote the library bundle**: `src/cli/index.ts` and `src/index.ts` shared the output name `index`, so `dist/index.mjs` actually contained the CLI. The CLI now builds to `dist/cli.mjs` and the CJS bin wrapper loads it explicitly.
+- **Lockfile parsing**:
+  - pnpm: `pnpm-lock.yaml` v5/v6/v9 layouts now parse correctly, with peer-resolution suffixes such as `5.0.1(vitest@5.0.1)` stripped. The previous parser returned a single bogus entry named `version` and ignored every real dependency.
+  - yarn: both classic v1 (`version "1.2.3"`) and Berry (`version: 1.2.3`) entries parse, including scoped names and comma-separated patterns.
+  - npm: `node_modules/a/node_modules/b` resolves to `b`, and legacy `lockfileVersion: 1` trees are walked recursively.
+- **Type errors**: 47 errors under `strict` + `noUncheckedIndexedAccess` fixed across `core/github`, `core/registry`, `core/reporter`, `signals/*`, `utils/http`, `utils/lockfile` and `utils/semver`.
+- **HTTP client**: cache revalidation called `requestOnce()` without a `timeout` argument, so revalidated requests ran without a timeout.
+- **Version reporting**: `getVersion()` returned a hardcoded string, and the SARIF report plus the HTTP `User-Agent` were pinned to `0.0.0`. All three now read the published `package.json`.
+
+### Changed
+- Build is now `tsup && tsc --emitDeclarationOnly`; tsup's declaration bundler cannot run against TypeScript 7, which no longer exposes the JS compiler API.
+
+### Note
+- Versions 0.1.2, 0.1.3 and 0.1.4 have no corresponding commits in this repository: tags `v0.1.2` and `v0.1.3` both point at the v0.1.1 commit.
+
 ## [Unreleased]
 
 ### Added
