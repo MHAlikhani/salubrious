@@ -25,6 +25,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Note
 - Versions 0.1.2, 0.1.3 and 0.1.4 have no corresponding commits in this repository: tags `v0.1.2` and `v0.1.3` both point at the v0.1.1 commit.
 
+## [0.1.6] - 2026-09-19
+
+### Fixed
+- **GitHub Action**: `action.yml` moved to the repository root. That is what `uses: MHAlikhani/salubrious@<ref>` (and the README) resolve to, and it is where GitHub Marketplace requires the metadata; the previous `.github/action/` location was never reachable through that reference.
+- **GitHub Action**: it passed `--format=<value>`, but the CLI has one flag per format (`--json`, `--markdown`, `--sarif`, `--github-actions`) and parses arguments strictly, so the action failed on its own default input. Inputs are now mapped to the real flags.
+- **GitHub Action**: removed `cache: 'npm'` from the Node setup step, which failed in repositories without a `package-lock.json`, and moved the action to Node 22.
+- **Release workflow**: publishing is driven by version tags (or manual dispatch) instead of every push to `main`, and is skipped when that version already exists on the registry.
+- **package.json**: removed the `publish` script, which made `pnpm publish` publish through the script and again itself, failing with `409 Conflict`.
+
+### Added
+- `version` input on the GitHub Action (defaults to `latest`).
+
 ## [Unreleased]
 
 ### Added

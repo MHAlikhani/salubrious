@@ -116,7 +116,7 @@ result.packages.forEach(p => {
 
 ```yaml
 - name: Check dependency health
-  uses: MHAlikhani/salubrious@main
+  uses: MHAlikhani/salubrious@v0.1.6
   with:
     fail-on: warning
     format: github-actions

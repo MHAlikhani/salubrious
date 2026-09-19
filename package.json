@@ -1,6 +1,6 @@
 {
   "name": "salubrious",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Know the health of your dependency tree before it kills your build.",
   "author": "Mohammad Hossein Alikhani <mohammad.hossein.alikhani@gmail.com>",
   "license": "MIT",
@@ -25,7 +25,7 @@
   },
   "files": [
     "dist/",
-    ".github/action/",
+    "action.yml",
     "README.md",
     "LICENSE"
   ],

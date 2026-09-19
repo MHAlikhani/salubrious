@@ -1,20 +1,22 @@
 name: 'salubrious'
-description: 'Know the health of your dependency tree before it kills your build.'
+description: 'Know the health of your dependency tree before it kills your build. Nine dependency health signals: abandoned, archived, deprecated, bus-factor, new-maintainer, major-drift, no-license, risky-license and typosquat-risk.'
 author: 'Mohammad Hossein Alikhani'
+
 branding:
   icon: 'shield'
   color: 'green'
+
 inputs:
   fail-on:
-    description: 'Fail on: warning | at-risk | critical'
+    description: 'Fail the job on: warning | at-risk | critical'
     required: false
     default: ''
   fail-threshold:
-    description: 'Fail if score < n'
+    description: 'Fail the job if the overall score is below this number'
     required: false
     default: ''
   include-dev:
-    description: 'Include devDependencies'
+    description: 'Include devDependencies in the analysis'
     required: false
     default: 'false'
   ignore:
@@ -34,7 +36,7 @@ inputs:
     required: false
     default: ''
   no-cache:
-    description: 'Disable cache'
+    description: 'Disable the cache'
     required: false
     default: 'false'
   offline:
@@ -46,24 +48,30 @@ inputs:
     required: false
     default: 'github-actions'
   working-directory:
-    description: 'Working directory'
+    description: 'Directory to analyse'
     required: false
     default: '.'
   concurrency:
-    description: 'Concurrent package analysis'
+    description: 'Number of packages analysed in parallel'
     required: false
     default: '10'
+  version:
+    description: 'salubrious version to install from npm'
+    required: false
+    default: 'latest'
+
 runs:
   using: 'composite'
   steps:
-    - name: Setup Node.js
+    - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
-        cache: 'npm'
+        node-version: '22'
+
     - name: Install salubrious
       shell: bash
-      run: npm install -g salubrious@latest
+      run: npm install --global "salubrious@${{ inputs.version }}"
+
     - name: Run salubrious
       shell: bash
       working-directory: ${{ inputs.working-directory }}
@@ -79,5 +87,17 @@ runs:
         if [ "${{ inputs.no-cache }}" = "true" ]; then ARGS+=("--no-cache"); fi
         if [ "${{ inputs.offline }}" = "true" ]; then ARGS+=("--offline"); fi
         if [ -n "${{ inputs.concurrency }}" ]; then ARGS+=("--concurrency=${{ inputs.concurrency }}"); fi
-        if [ -n "${{ inputs.format }}" ]; then ARGS+=("--format=${{ inputs.format }}"); fi
+
+        # The CLI takes one flag per format, there is no --format= option.
+        case "${{ inputs.format }}" in
+          json) ARGS+=("--json") ;;
+          markdown) ARGS+=("--markdown") ;;
+          sarif) ARGS+=("--sarif") ;;
+          github-actions) ARGS+=("--github-actions") ;;
+          human) ;;
+          "") ;;
+          *) echo "Unknown format '${{ inputs.format }}', falling back to human output." ;;
+        esac
+
+        echo "salubrious ${ARGS[*]}"
         salubrious "${ARGS[@]}"
