@@ -6,9 +6,9 @@
 
 <p align="center">
   <a href="https://npmjs.com/package/salubrious"><img src="https://img.shields.io/npm/v/salubrious?label=salubrious&color=00D47E" alt="npm version"></a>
-  <a href="https://github.com/salubrious/salubrious/actions"><img src="https://github.com/salubrious/salubrious/workflows/CI/badge.svg" alt="CI"></a>
+  <a href="https://github.com/MHAlikhani/salubrious/actions"><img src="https://github.com/MHAlikhani/salubrious/workflows/CI/badge.svg" alt="CI"></a>
   <a href="https://npmjs.com/package/salubrious"><img src="https://img.shields.io/npm/dm/salubrious?color=00D47E" alt="downloads"></a>
-  <a href="https://github.com/salubrious/salubrious/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/salubrious?color=00D47E" alt="license"></a>
+  <a href="https://github.com/MHAlikhani/salubrious/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/salubrious?color=00D47E" alt="license"></a>
 </p>
 
 ---
@@ -51,7 +51,7 @@ salubrious --json
 salubrious --format=github-actions
 ```
 
-## Signals (v0.0.1)
+## Signals
 
 | Signal | Penalty | Description |
 |--------|---------|-------------|
@@ -79,7 +79,7 @@ Create `salubrious.config.json`:
   "ignore": ["@types/*", "eslint-*"],
   "signals": {
     "abandoned": { "thresholdMonths": 24 },
-    "busFactor": { "minMaintainers": 2 }
+    "bus-factor": { "minMaintainers": 2 }
   }
 }
 ```

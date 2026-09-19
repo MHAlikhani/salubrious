@@ -1,6 +1,6 @@
 {
   "name": "salubrious",
-  "version": "0.0.0",
+  "version": "0.0.6",
   "description": "Know the health of your dependency tree before it kills your build.",
   "author": "Mohammad Hossein Alikhani <mohammad.hossein.alikhani@gmail.com>",
   "license": "SEE LICENSE IN LICENSE",
@@ -14,14 +14,14 @@
     "./cli": {
       "types": "./dist/cli.d.ts",
       "import": "./dist/cli.mjs",
-      "require": "./dist/cli.js"
+      "require": "./dist/cli.cjs"
     }
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
-    "salubrious": "./dist/cli.mjs"
+    "salubrious": "./dist/cli.cjs"
   },
   "files": [
     "dist/",
@@ -46,17 +46,16 @@
     "node": ">=18"
   },
   "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/salubrious/salubrious.git"
+    "url": "git+https://github.com/MHAlikhani/salubrious.git"
   },
   "bugs": {
-    "url": "https://github.com/salubrious/salubrious/issues"
+    "url": "https://github.com/MHAlikhani/salubrious/issues"
   },
-  "homepage": "https://github.com/salubrious/salubrious#readme",
+  "homepage": "https://github.com/MHAlikhani/salubrious#readme",
   "keywords": [
     "dependency",
     "health",

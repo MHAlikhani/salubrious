@@ -16,8 +16,9 @@ export default defineConfig([
     shims: false,
     splitting: false,
     bundle: true,
+    outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
   },
-  // CLI - ESM only (has top-level await)
+  // CLI - ESM (has top-level await)
   {
     entry: ['src/cli.ts'],
     format: ['esm'],
@@ -33,5 +34,22 @@ export default defineConfig([
     splitting: false,
     bundle: true,
     outExtension: () => ({ js: '.mjs' }),
+  },
+  // CLI - CJS wrapper (for bin compatibility) - outputs as cli.cjs
+  {
+    entry: { cli: 'src/cli-wrapper.ts' },
+    format: ['cjs'],
+    dts: false,
+    sourcemap: true,
+    clean: false,
+    treeshake: true,
+    minify: false,
+    target: 'node18',
+    platform: 'node',
+    outDir: 'dist',
+    shims: false,
+    splitting: false,
+    bundle: true,
+    outExtension: () => ({ js: '.cjs' }),
   },
 ]);
