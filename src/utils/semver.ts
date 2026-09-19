@@ -1,13 +1,15 @@
 export interface ParsedVersion {
-  major: number;
-  minor: number;
-  patch: number;
-  prerelease?: string;
-  build?: string;
+  readonly major: number;
+  readonly minor: number;
+  readonly patch: number;
+  readonly prerelease?: string;
+  readonly build?: string;
 }
 
 export function parseVersion(version: string): ParsedVersion | null {
-  const match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/);
+  const match = version.match(
+    /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/
+  );
   if (!match) return null;
   return {
     major: parseInt(match[1], 10),
@@ -41,7 +43,7 @@ export function majorDiff(current: string, latest: string): number {
 export function satisfies(range: string, version: string): boolean {
   const parsed = parseVersion(version);
   if (!parsed) return false;
-  
+
   if (range.startsWith('^')) {
     const base = parseVersion(range.slice(1));
     if (!base) return false;

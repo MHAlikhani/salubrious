@@ -1,31 +1,35 @@
 import { readFile } from 'node:fs/promises';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { LockfileDependency } from '../core/types.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export interface PackageJson {
-  name?: string;
-  version?: string;
-  description?: string;
-  main?: string;
-  types?: string;
-  exports?: Record<string, unknown>;
-  bin?: Record<string, string> | string;
-  scripts?: Record<string, string>;
-  dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
-  peerDependencies?: Record<string, string>;
-  optionalDependencies?: Record<string, string>;
-  engines?: Record<string, string>;
-  license?: string;
-  author?: string | { name: string; email?: string; url?: string };
-  repository?: { type: string; url: string } | string;
-  bugs?: { url: string; email?: string } | string;
-  homepage?: string;
-  keywords?: string[];
-  files?: string[];
-  publishConfig?: Record<string, unknown>;
-  workspaces?: string[];
-  private?: boolean;
+  readonly name?: string;
+  readonly version?: string;
+  readonly description?: string;
+  readonly main?: string;
+  readonly types?: string;
+  readonly exports?: Record<string, unknown>;
+  readonly bin?: Record<string, string> | string;
+  readonly scripts?: Record<string, string>;
+  readonly dependencies?: Record<string, string>;
+  readonly devDependencies?: Record<string, string>;
+  readonly peerDependencies?: Record<string, string>;
+  readonly optionalDependencies?: Record<string, string>;
+  readonly engines?: Record<string, string>;
+  readonly license?: string;
+  readonly author?: string | { readonly name: string; readonly email?: string; readonly url?: string };
+  readonly repository?: { readonly type: string; readonly url: string } | string;
+  readonly bugs?: { readonly url: string; readonly email?: string } | string;
+  readonly homepage?: string;
+  readonly keywords?: ReadonlyArray<string>;
+  readonly files?: ReadonlyArray<string>;
+  readonly publishConfig?: Record<string, unknown>;
+  readonly workspaces?: ReadonlyArray<string>;
+  readonly private?: boolean;
 }
 
 export async function readPackageJson(cwd: string): Promise<PackageJson | null> {
@@ -46,9 +50,9 @@ export function getAllDependencies(pkg: PackageJson, includeDev = false): Record
   return deps;
 }
 
-export function parseLockfile(lockfilePath: string, content: string): Map<string, { version: string; resolved?: string; integrity?: string; dev?: boolean }> {
-  const result = new Map<string, { version: string; resolved?: string; integrity?: string; dev?: boolean }>();
-  
+export function parseLockfile(lockfilePath: string, content: string): Map<string, LockfileDependency> {
+  const result = new Map<string, LockfileDependency>();
+
   if (lockfilePath.endsWith('package-lock.json') || lockfilePath.endsWith('npm-shrinkwrap.json')) {
     try {
       const data = JSON.parse(content);
@@ -56,7 +60,7 @@ export function parseLockfile(lockfilePath: string, content: string): Map<string
         for (const [path, info] of Object.entries(data.packages)) {
           if (path === '') continue;
           const name = path.startsWith('node_modules/') ? path.slice('node_modules/'.length) : path;
-          const pkgInfo = info as { version: string; resolved?: string; integrity?: string; dev?: boolean };
+          const pkgInfo = info as { readonly version: string; readonly resolved?: string; readonly integrity?: string; readonly dev?: boolean };
           result.set(name, {
             version: pkgInfo.version,
             resolved: pkgInfo.resolved,
@@ -66,7 +70,7 @@ export function parseLockfile(lockfilePath: string, content: string): Map<string
         }
       } else if (data.dependencies) {
         for (const [name, info] of Object.entries(data.dependencies)) {
-          const pkgInfo = info as { version: string; resolved?: string; integrity?: string; dev?: boolean };
+          const pkgInfo = info as { readonly version: string; readonly resolved?: string; readonly integrity?: string; readonly dev?: boolean };
           result.set(name, {
             version: pkgInfo.version,
             resolved: pkgInfo.resolved,
@@ -79,14 +83,13 @@ export function parseLockfile(lockfilePath: string, content: string): Map<string
       // Ignore parse errors
     }
   } else if (lockfilePath.endsWith('pnpm-lock.yaml')) {
-    // pnpm lockfile parsing - simplified
     try {
       const lines = content.split('\n');
       let currentName = '';
       let currentVersion = '';
       let inDependencies = false;
       let inDevDependencies = false;
-      
+
       for (const line of lines) {
         const trimmed = line.trim();
         if (trimmed === 'dependencies:') {
@@ -104,13 +107,13 @@ export function parseLockfile(lockfilePath: string, content: string): Map<string
           inDevDependencies = false;
           continue;
         }
-        
+
         const depMatch = trimmed.match(/^([^:]+):\s*(.+)$/);
         if (depMatch && (inDependencies || inDevDependencies)) {
           currentName = depMatch[1].trim();
           currentVersion = depMatch[2].trim().replace(/^['"]|['"]$/g, '');
         }
-        
+
         const versionMatch = trimmed.match(/^version:\s*(.+)$/);
         if (versionMatch && currentName) {
           const version = versionMatch[1].trim().replace(/^['"]|['"]$/g, '');
@@ -125,22 +128,19 @@ export function parseLockfile(lockfilePath: string, content: string): Map<string
       // Ignore
     }
   } else if (lockfilePath.endsWith('yarn.lock')) {
-    // yarn v1 lockfile parsing - simplified
     try {
       const lines = content.split('\n');
       let currentName = '';
       let currentVersion = '';
-      
+
       for (const line of lines) {
         const trimmed = line.trim();
         if (!trimmed || trimmed.startsWith('#')) continue;
-        
+
         if (!line.startsWith(' ') && !line.startsWith('\t')) {
-          // Package name line
           const nameMatch = trimmed.match(/^"([^"]+)"$/);
           if (nameMatch) {
             currentName = nameMatch[1];
-            // Extract version from "name@version" format
             const atIndex = currentName.lastIndexOf('@');
             if (atIndex > 0) {
               currentVersion = currentName.slice(atIndex + 1);
@@ -159,23 +159,23 @@ export function parseLockfile(lockfilePath: string, content: string): Map<string
       // Ignore
     }
   }
-  
+
   return result;
 }
 
-export function detectLockfile(cwd: string): string | null {
+export async function detectLockfile(cwd: string): Promise<string | null> {
   const candidates = [
     'pnpm-lock.yaml',
     'package-lock.json',
     'yarn.lock',
     'npm-shrinkwrap.json',
   ];
-  
+
   for (const candidate of candidates) {
     try {
       const path = join(cwd, candidate);
-      // Just check if file exists by trying to read it
-      // We'll do this synchronously in the analyzer
+      await readFile(path);
+      return path;
     } catch {
       continue;
     }

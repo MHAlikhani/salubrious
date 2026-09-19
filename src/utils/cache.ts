@@ -2,16 +2,11 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
-
-export interface CacheEntry<T> {
-  data: T;
-  timestamp: number;
-  etag?: string;
-}
+import type { CacheEntry } from '../core/types.js';
 
 export class FileCache {
-  private cacheDir: string;
-  private memoryCache = new Map<string, CacheEntry<unknown>>();
+  private readonly cacheDir: string;
+  private readonly memoryCache = new Map<string, CacheEntry<unknown>>();
 
   constructor(cacheDir?: string) {
     this.cacheDir = cacheDir ?? this.getDefaultCacheDir();

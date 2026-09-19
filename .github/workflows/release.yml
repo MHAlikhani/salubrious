@@ -19,7 +19,8 @@ jobs:
       - run: pnpm run build
       - run: pnpm run test
       - uses: changesets/action@v1
-        with: { publish: pnpm run publish }
+        with:
+          publish: pnpm run publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

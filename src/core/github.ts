@@ -1,21 +1,13 @@
-import { httpGet, HttpClientOptions } from '../utils/http.js';
-
-export interface GitHubRepoInfo {
-  archived: boolean;
-  license: { spdx_id: string } | null;
-  owner: { login: string };
-  name: string;
-  full_name: string;
-  html_url: string;
-}
+import { HttpClient } from '../utils/http.js';
+import type { GitHubRepoInfo } from '../core/types.js';
 
 export class GitHubClient {
+  private readonly client: HttpClient;
   private token?: string;
-  private options: HttpClientOptions;
 
-  constructor(token?: string, options: HttpClientOptions = {}) {
+  constructor(token?: string, httpClient?: HttpClient) {
     this.token = token;
-    this.options = options;
+    this.client = httpClient ?? new HttpClient();
   }
 
   setToken(token: string): void {
@@ -36,20 +28,17 @@ export class GitHubClient {
 
   async getRepoInfo(owner: string, repo: string): Promise<GitHubRepoInfo | null> {
     const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`;
-    
+
     try {
-      const response = await httpGet<GitHubRepoInfo>(url, {
-        ...this.options,
-        headers: this.getHeaders(),
-      });
+      const response = await this.client.get<GitHubRepoInfo>(url, this.getHeaders());
       if (response.statusCode === 404) return null;
       if (response.statusCode !== 200) {
         throw new Error(`GitHub API returned ${response.statusCode} for ${owner}/${repo}`);
       }
       return response.data;
-    } catch (err) {
-      if (err instanceof Error && err.message.includes('404')) return null;
-      throw err;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('404')) return null;
+      throw error;
     }
   }
 
@@ -64,13 +53,12 @@ export class GitHubClient {
   }
 
   static parseRepoUrl(url: string): { owner: string; repo: string } | null {
-    // Handle various GitHub URL formats
     const patterns = [
       /^https?:\/\/github\.com\/([^/]+)\/([^/]+?)(?:\.git)?\/?$/,
       /^git@github\.com:([^/]+)\/([^/]+?)(?:\.git)?$/,
       /^github\.com\/([^/]+)\/([^/]+?)(?:\.git)?$/,
     ];
-    
+
     for (const pattern of patterns) {
       const match = url.match(pattern);
       if (match) {

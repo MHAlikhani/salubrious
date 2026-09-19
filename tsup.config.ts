@@ -20,7 +20,7 @@ export default defineConfig([
   },
   // CLI - ESM (has top-level await)
   {
-    entry: ['src/cli.ts'],
+    entry: ['src/cli/index.ts'],
     format: ['esm'],
     dts: false,
     sourcemap: true,

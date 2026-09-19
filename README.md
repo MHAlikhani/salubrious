@@ -5,25 +5,28 @@
 </p>
 
 <p align="center">
-  <a href="https://npmjs.com/package/salubrious"><img src="https://img.shields.io/npm/v/salubrious?label=salubrious&color=00D47E" alt="npm version"></a>
-  <a href="https://github.com/MHAlikhani/salubrious/actions"><img src="https://github.com/MHAlikhani/salubrious/workflows/CI/badge.svg" alt="CI"></a>
-  <a href="https://npmjs.com/package/salubrious"><img src="https://img.shields.io/npm/dm/salubrious?color=00D47E" alt="downloads"></a>
-  <a href="https://github.com/MHAlikhani/salubrious/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/salubrious?color=00D47E" alt="license"></a>
+  <a href="https://npmjs.com/package/salubrious"><img src="https://img.shields.io/npm/v/salubrious?style=flat-square&logo=npm&logoColor=white&label=npm&color=CB3837" alt="npm version"></a>
+  <a href="https://github.com/MHAlikhani/salubrious/actions"><img src="https://img.shields.io/github/actions/workflow/status/MHAlikhani/salubrious/ci.yml?style=flat-square&logo=githubactions&logoColor=white&label=CI" alt="CI"></a>
+  <a href="https://github.com/MHAlikhani/salubrious/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/salubrious?style=flat-square&label=license&color=00D47E" alt="license"></a>
+  <a href="https://github.com/MHAlikhani/salubrious"><img src="https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript strict"></a>
+  <a href="https://github.com/MHAlikhani/salubrious"><img src="https://img.shields.io/badge/dependencies-0-00D47E?style=flat-square" alt="zero dependencies"></a>
 </p>
 
 ---
 
-## Why salubrious?
+## The problem with `npm audit`
 
-`npm audit` only checks for **known vulnerabilities**. But the most dangerous package in your tree might have **zero CVEs** — it might simply be:
+`npm audit` only catches **known vulnerabilities**. But the package that takes down your build — or your production — usually has **zero CVEs**. It's just quietly rotting:
 
-- 🟤 **Abandoned** — no updates in 2+ years (no one will patch the next zero-day)
-- 👤 **Single maintainer** — if that account is phished, malicious code ships
-- 📦 **Archived on GitHub** — publicly signaled abandonment, but still publishes
-- ⚖️ **No license / viral license** — legal time bomb for commercial projects
-- 📉 **Major version drift** — 2+ majors behind, breaking changes accumulate
+| Risk | Why it matters |
+|------|----------------|
+| 🟤 **Abandoned** | No updates in 2+ years. Nobody's patching the next zero-day. |
+| 👤 **Bus factor of 1** | One phished account and malicious code ships to millions. |
+| 📦 **Archived repo** | Abandonment is public — but the package still publishes. |
+| ⚖️ **No license / viral license** | A legal time bomb for commercial projects. |
+| 📉 **Major version drift** | 2+ majors behind. Breaking changes pile up silently. |
 
-**salubrious** catches all of these. And more.
+**salubrious** catches all of these — and more.
 
 ## Install
 
@@ -35,7 +38,7 @@ npm install -g salubrious
 npm install -D salubrious
 ```
 
-## Quick Start
+## Quick start
 
 ```bash
 # Analyze current project (auto-detects lockfile)
@@ -53,23 +56,25 @@ salubrious --format=github-actions
 
 ## Signals
 
-| Signal | Penalty | Description |
-|--------|---------|-------------|
-| `abandoned` | -25 | No publish in 24+ months |
-| `bus-factor` | -15 | Only 1 npm maintainer |
-| `archived` | -20 | GitHub repo archived |
-| `no-license` | -30 | Missing or unknown SPDX license |
-| `risky-license` | -40 | GPL/AGPL/SSPL in production deps |
-| `deprecated` | -50 | npm deprecated flag set |
-| `major-drift` | -10 | 2+ major versions behind latest |
-| `new-maintainer` | -15 | New maintainer in last 6 months |
-| `typosquat-risk` | -20 | Name similar to top-1000 package |
+Every package starts at **100** and loses points for each risk signal detected.
 
-**Scoring:** Base 100. Sum penalties. ≥80 🟢 | 60-79 🟡 | 40-59 🟠 | <40 🔴
+| Signal | Penalty | Description |
+|--------|:-------:|-------------|
+| `deprecated` | −50 | npm deprecated flag set |
+| `risky-license` | −40 | GPL/AGPL/SSPL in production deps |
+| `no-license` | −30 | Missing or unknown SPDX license |
+| `abandoned` | −25 | No publish in 24+ months |
+| `archived` | −20 | GitHub repo archived |
+| `typosquat-risk` | −20 | Name similar to a top-1000 package |
+| `bus-factor` | −15 | Only 1 npm maintainer |
+| `new-maintainer` | −15 | New maintainer in the last 6 months |
+| `major-drift` | −10 | 2+ major versions behind latest |
+
+**Grading:** ≥80 🟢 healthy · 60–79 🟡 warning · 40–59 🟠 risky · <40 🔴 critical
 
 ## Configuration
 
-Create `salubrious.config.json`:
+Create `salubrious.config.json` in your project root:
 
 ```json
 {
@@ -84,7 +89,7 @@ Create `salubrious.config.json`:
 }
 ```
 
-## Library Usage
+## Library usage
 
 ```typescript
 import { analyze } from 'salubrious';
@@ -99,13 +104,16 @@ result.packages.forEach(p => {
 });
 ```
 
-## CI Integration
+## CI integration
 
 ### GitHub Actions
 
 ```yaml
 - name: Check dependency health
-  run: npx salubrious --fail-on=warning --format=github-actions
+  uses: MHAlikhani/salubrious@main
+  with:
+    fail-on: warning
+    format: github-actions
 ```
 
 ### GitLab CI
@@ -120,7 +128,7 @@ dependency_health:
 
 ## Architecture
 
-- **Zero runtime dependencies** — only Node.js built-ins
+- **Zero runtime dependencies** — Node.js built-ins only
 - **TypeScript-first** — strict mode, full type exports
 - **Dual CJS/ESM** — modern exports map
 - **Fast** — parallel fetching, XDG-compliant caching, <2s on 500-dep trees
@@ -128,7 +136,7 @@ dependency_health:
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). All PRs welcome!
+All PRs welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
 
 ## License
 

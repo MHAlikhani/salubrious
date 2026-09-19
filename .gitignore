@@ -1,7 +1,7 @@
 node_modules/
 dist/
 coverage/
-.vigor-cache/
+.salubrious-cache/
 *.log
 .DS_Store
 *.tgz

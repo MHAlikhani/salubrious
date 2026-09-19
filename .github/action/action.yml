@@ -49,6 +49,10 @@ inputs:
     description: 'Working directory'
     required: false
     default: '.'
+  concurrency:
+    description: 'Concurrent package analysis'
+    required: false
+    default: '10'
 runs:
   using: 'composite'
   steps:
@@ -74,5 +78,6 @@ runs:
         if [ -n "${{ inputs.cache-dir }}" ]; then ARGS+=("--cache=${{ inputs.cache-dir }}"); fi
         if [ "${{ inputs.no-cache }}" = "true" ]; then ARGS+=("--no-cache"); fi
         if [ "${{ inputs.offline }}" = "true" ]; then ARGS+=("--offline"); fi
+        if [ -n "${{ inputs.concurrency }}" ]; then ARGS+=("--concurrency=${{ inputs.concurrency }}"); fi
         if [ -n "${{ inputs.format }}" ]; then ARGS+=("--format=${{ inputs.format }}"); fi
         salubrious "${ARGS[@]}"

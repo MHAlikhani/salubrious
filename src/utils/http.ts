@@ -2,22 +2,8 @@ import { createHash } from 'node:crypto';
 import { request, RequestOptions } from 'node:http';
 import { request as httpsRequest } from 'node:https';
 import { URL } from 'node:url';
-import { FileCache, globalCache } from './cache.js';
-
-export interface HttpResponse<T> {
-  data: T;
-  statusCode: number;
-  headers: Record<string, string | string[] | undefined>;
-  etag?: string;
-}
-
-export interface HttpClientOptions {
-  timeout?: number;
-  maxRetries?: number;
-  retryDelay?: number;
-  cache?: FileCache;
-  offline?: boolean;
-}
+import { HTTP_TIMEOUT, HTTP_MAX_RETRIES, HTTP_RETRY_DELAY } from '../constants.js';
+import type { HttpResponse, CacheEntry } from '../core/types.js';
 
 function isRetryableStatus(status: number): boolean {
   return status === 429 || status >= 500;
@@ -27,56 +13,12 @@ function parseJson<T>(text: string): T {
   return JSON.parse(text) as T;
 }
 
-async function makeRequest<T>(
-  url: string,
-  options: RequestOptions & { headers?: Record<string, string> },
-  clientOptions: HttpClientOptions
-): Promise<HttpResponse<T>> {
-  const { timeout = 10000, maxRetries = 3, retryDelay = 1000, cache, offline } = clientOptions;
-  const cacheKey = `${url}:${JSON.stringify(options.headers ?? {})}`;
-  const cacheInstance = cache ?? globalCache;
-
-  if (!offline) {
-    const cached = await cacheInstance.get<HttpResponse<T>>(cacheKey);
-    if (cached && cached.etag) {
-      const conditionalOptions = { ...options, headers: { ...options.headers, 'If-None-Match': cached.etag } };
-      try {
-        const response = await makeRequestOnce<T>(url, conditionalOptions, timeout);
-        if (response.statusCode === 304) {
-          return cached;
-        }
-        return response;
-      } catch {
-        return cached;
-      }
-    }
-    if (cached) return cached;
-  }
-
-  let lastError: Error | null = null;
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const response = await makeRequestOnce<T>(url, options, timeout);
-      if (response.statusCode === 304 && attempt > 0) continue;
-      if (isRetryableStatus(response.statusCode) && attempt < maxRetries) {
-        await new Promise(r => setTimeout(r, retryDelay * (attempt + 1)));
-        continue;
-      }
-      if (!offline && response.headers.etag) {
-        await cacheInstance.set(cacheKey, response, response.headers.etag as string);
-      }
-      return response;
-    } catch (err) {
-      lastError = err instanceof Error ? err : new Error(String(err));
-      if (attempt < maxRetries) {
-        await new Promise(r => setTimeout(r, retryDelay * (attempt + 1)));
-      }
-    }
-  }
-  throw lastError ?? new Error('Request failed after retries');
+function createCacheKey(url: string, headers: Record<string, string> = {}): string {
+  const content = `${url}:${JSON.stringify(headers)}`;
+  return createHash('sha256').update(content).digest('hex').slice(0, 32);
 }
 
-function makeRequestOnce<T>(
+async function makeRequestOnce<T>(
   url: string,
   options: RequestOptions & { headers?: Record<string, string> },
   timeout: number
@@ -100,7 +42,7 @@ function makeRequestOnce<T>(
     const client = isHttps ? httpsRequest : request;
     const req = client(reqOptions, (res) => {
       let data = '';
-      res.on('data', chunk => data += chunk);
+      res.on('data', (chunk) => (data += chunk));
       res.on('end', () => {
         try {
           const parsedData = data ? parseJson<T>(data) : undefined as T;
@@ -129,16 +71,108 @@ function makeRequestOnce<T>(
   });
 }
 
-export async function httpGet<T>(
-  url: string,
-  options: HttpClientOptions = {}
-): Promise<HttpResponse<T>> {
-  return makeRequest<T>(url, { method: 'GET' }, options);
+export class HttpClient {
+  private readonly timeout: number;
+  private readonly maxRetries: number;
+  private readonly retryDelay: number;
+  private readonly cache: Map<string, CacheEntry<unknown>> = new Map();
+  private readonly cacheDir?: string;
+
+  constructor(options: {
+    timeout?: number;
+    maxRetries?: number;
+    retryDelay?: number;
+    cacheDir?: string;
+    offline?: boolean;
+  } = {}) {
+    this.timeout = options.timeout ?? HTTP_TIMEOUT;
+    this.maxRetries = options.maxRetries ?? HTTP_MAX_RETRIES;
+    this.retryDelay = options.retryDelay ?? HTTP_RETRY_DELAY;
+    this.cacheDir = options.cacheDir;
+  }
+
+  async get<T>(url: string, headers: Record<string, string> = {}): Promise<HttpResponse<T>> {
+    const cacheKey = createCacheKey(url, headers);
+    const cached = this.cache.get(cacheKey);
+
+    if (cached) {
+      const conditionalHeaders = { ...headers };
+      if (cached.etag) {
+        conditionalHeaders['If-None-Match'] = cached.etag;
+      }
+
+      try {
+        const response = await this.requestOnce<T>(url, { method: 'GET', headers: conditionalHeaders });
+        if (response.statusCode === 304) {
+          return cached as HttpResponse<T>;
+        }
+        if (response.headers.etag) {
+          this.cache.set(cacheKey, { ...response, etag: response.headers.etag });
+        }
+        return response;
+      } catch {
+        return cached as HttpResponse<T>;
+      }
+    }
+
+    return this.requestWithRetry<T>(url, { method: 'GET', headers });
+  }
+
+  async head(url: string, headers: Record<string, string> = {}): Promise<HttpResponse<null>> {
+    return this.requestWithRetry<null>(url, { method: 'HEAD', headers });
+  }
+
+  private async requestWithRetry<T>(
+    url: string,
+    options: RequestOptions & { headers?: Record<string, string> }
+  ): Promise<HttpResponse<T>> {
+    let lastError: Error | null = null;
+
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const response = await this.requestOnce<T>(url, options, this.timeout);
+
+        if (isRetryableStatus(response.statusCode) && attempt < this.maxRetries) {
+          await this.sleep(this.retryDelay * (attempt + 1));
+          continue;
+        }
+
+        if (response.headers.etag) {
+          const cacheKey = createCacheKey(url, options.headers ?? {});
+          this.cache.set(cacheKey, { ...response, etag: response.headers.etag });
+        }
+
+        return response;
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+        if (attempt < this.maxRetries) {
+          await this.sleep(this.retryDelay * (attempt + 1));
+        }
+      }
+    }
+
+    throw lastError ?? new Error('Request failed after retries');
+  }
+
+  private async requestOnce<T>(
+    url: string,
+    options: RequestOptions & { headers?: Record<string, string> },
+    timeout: number
+  ): Promise<HttpResponse<T>> {
+    return makeRequestOnce<T>(url, options, timeout);
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  clearCache(): void {
+    this.cache.clear();
+  }
+
+  getCacheStats(): { size: number } {
+    return { size: this.cache.size };
+  }
 }
 
-export async function httpHead(
-  url: string,
-  options: HttpClientOptions = {}
-): Promise<HttpResponse<null>> {
-  return makeRequest<null>(url, { method: 'HEAD' }, options);
-}
+export const httpClient = new HttpClient();
