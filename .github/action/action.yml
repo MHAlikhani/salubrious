@@ -1,0 +1,78 @@
+name: 'salubrious'
+description: 'Know the health of your dependency tree before it kills your build.'
+author: 'Mohammad Hossein Alikhani'
+branding:
+  icon: 'shield'
+  color: 'green'
+inputs:
+  fail-on:
+    description: 'Fail on: warning | at-risk | critical'
+    required: false
+    default: ''
+  fail-threshold:
+    description: 'Fail if score < n'
+    required: false
+    default: ''
+  include-dev:
+    description: 'Include devDependencies'
+    required: false
+    default: 'false'
+  ignore:
+    description: 'Comma-separated globs to ignore (e.g. @types/*,eslint-*)'
+    required: false
+    default: ''
+  only:
+    description: 'Comma-separated signal IDs to run'
+    required: false
+    default: ''
+  config:
+    description: 'Config file path'
+    required: false
+    default: ''
+  cache-dir:
+    description: 'Cache directory'
+    required: false
+    default: ''
+  no-cache:
+    description: 'Disable cache'
+    required: false
+    default: 'false'
+  offline:
+    description: 'Offline mode (use cached data only)'
+    required: false
+    default: 'false'
+  format:
+    description: 'Output format: human | json | markdown | sarif | github-actions'
+    required: false
+    default: 'github-actions'
+  working-directory:
+    description: 'Working directory'
+    required: false
+    default: '.'
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    - name: Install salubrious
+      shell: bash
+      run: npm install -g salubrious@latest
+    - name: Run salubrious
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        ARGS=()
+        if [ -n "${{ inputs.fail-on }}" ]; then ARGS+=("--fail-on=${{ inputs.fail-on }}"); fi
+        if [ -n "${{ inputs.fail-threshold }}" ]; then ARGS+=("--fail-threshold=${{ inputs.fail-threshold }}"); fi
+        if [ "${{ inputs.include-dev }}" = "true" ]; then ARGS+=("--include-dev"); fi
+        if [ -n "${{ inputs.ignore }}" ]; then ARGS+=("--ignore=${{ inputs.ignore }}"); fi
+        if [ -n "${{ inputs.only }}" ]; then ARGS+=("--only=${{ inputs.only }}"); fi
+        if [ -n "${{ inputs.config }}" ]; then ARGS+=("--config=${{ inputs.config }}"); fi
+        if [ -n "${{ inputs.cache-dir }}" ]; then ARGS+=("--cache=${{ inputs.cache-dir }}"); fi
+        if [ "${{ inputs.no-cache }}" = "true" ]; then ARGS+=("--no-cache"); fi
+        if [ "${{ inputs.offline }}" = "true" ]; then ARGS+=("--offline"); fi
+        if [ -n "${{ inputs.format }}" ]; then ARGS+=("--format=${{ inputs.format }}"); fi
+        salubrious "${ARGS[@]}"
