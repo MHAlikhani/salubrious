@@ -2,39 +2,45 @@
 
 ## Supported Versions
 
-We release patches for security vulnerabilities for the following versions:
-
-| Version | Supported          |
-| ------- | ------------------ |
-| 0.x.x   | :white_check_mark: |
+| Version | Supported |
+|---------|-----------|
+| 0.1.x   | ✅ Yes    |
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in salubrious, please report it by emailing:
+**Please do NOT open a public issue for security vulnerabilities.**
 
-**mohammad.hossein.alikhani@gmail.com**
+Instead, email **security@salubrious.dev** (or mohammad.hossein.alikhani@gmail.com) with:
 
-Please include the following information:
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact
 - Any suggested fixes
 
-We will acknowledge receipt within 48 hours and provide a timeline for a fix within 7 days. We aim to release patches for critical vulnerabilities within 30 days.
-
-## Security Updates
-
-Security updates will be released as patch versions and announced via:
-- GitHub Security Advisories
-- npm audit
-- Release notes
+We will acknowledge receipt within **48 hours** and provide a fix timeline within **7 days**.
 
 ## Disclosure Timeline
 
-- Day 0: Vulnerability reported
-- Day 2: Acknowledgment sent
-- Day 7: Fix timeline provided
-- Day 30: Target for patch release (critical)
-- Day 90: Target for patch release (non-critical)
+- **Day 0**: Vulnerability reported
+- **Day 2**: Acknowledgment sent
+- **Day 7**: Fix timeline provided
+- **Day 30**: Target for patch release (critical)
+- **Day 90**: Target for patch release (non-critical)
 
-We follow a 90-day coordinated disclosure policy. We ask that you do not publicly disclose the vulnerability until a fix is released.
+We follow a **90-day coordinated disclosure** policy. Please do not publicly disclose until a fix is released.
+
+## Security Updates
+
+Security updates are released as patch versions and announced via:
+
+- GitHub Security Advisories
+- npm audit
+- Release notes (CHANGELOG.md)
+
+## Scope
+
+This policy covers the `salubrious` npm package and its GitHub Action.
+
+Out of scope:
+- Third-party dependencies (report to their maintainers)
+- Issues in downstream consumers' configurations

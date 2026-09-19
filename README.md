@@ -1,4 +1,10 @@
-# salubrious
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/logo-light.png">
+    <img alt="salubrious logo" src="assets/logo-light.png" width="300">
+  </picture>
+</p>
 
 <p align="center">
   <strong>Know the health of your dependency tree before it kills your build.</strong>
@@ -140,6 +146,6 @@ All PRs welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
 
 ## License
 
-Salubrious License v1.0 © 2026 Mohammad Hossein Alikhani
+MIT License © 2026 Mohammad Hossein Alikhani
 
-See [LICENSE](LICENSE) for details. This license protects the salubrious brand and the novelty of its dependency health signal taxonomy while remaining free for use, modification, and contribution.
+See [LICENSE](LICENSE) for details.

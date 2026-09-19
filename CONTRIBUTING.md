@@ -1,47 +1,78 @@
 # Contributing to salubrious
 
-Thank you!
+Thank you for contributing! 🎉
 
-## Development
+## Quick Start
 
 ```bash
-pnpm install
-pnpm run dev        # Watch mode
-pnpm run test       # Run tests
-pnpm run lint       # Check format + lint
-pnpm run typecheck  # TypeScript check
+# Clone and install
+git clone https://github.com/MHAlikhani/salubrious.git
+cd salubrious
+corepack enable pnpm && pnpm install
+
+# Run tests
+pnpm run test
+
+# Run linter
+pnpm run lint
+
+# Build
+pnpm run build
 ```
 
-## Code Style
+## Development Workflow
 
-- Biome handles formatting & linting (`pnpm run format`, `pnpm run lint:fix`)
-- Strict TypeScript (`noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`)
-- Zero runtime dependencies — use Node.js built-ins only
-- Pure functions in `signals/`, `utils/` — no side effects
-- JSDoc on all public exports
+1. **Create an issue** first for significant changes
+2. **Branch** from `main`: `git checkout -b feat/my-feature`
+3. **Make changes** with tests
+4. **Run quality checks**: `pnpm run lint && pnpm run test && pnpm run build`
+5. **Open a PR** with a clear description
+
+## Code Standards
+
+- **TypeScript strict mode** — no `any`, prefer type inference
+- **Biome** for formatting/linting — run `pnpm run lint:fix`
+- **Zero runtime dependencies** — Node.js built-ins only
+- **Pure functions** in `signals/`, `utils/` — no side effects
+- **JSDoc** on all public exports
 
 ## Adding a Signal
 
-1. Create `src/signals/my-signal.ts` exporting `analyze(pkg, options)`
-2. Register in `src/signals/index.ts`
+1. Create `src/signals/my-signal.ts` exporting the signal
+2. Register in `src/signals/signal-registry.ts`
 3. Add tests in `test/unit/signals/my-signal.test.ts`
 4. Update `README.md` signals table
+5. Add to `CHANGELOG.md`
+
+## Testing
+
+```bash
+# Run all tests
+pnpm run test
+
+# Watch mode
+pnpm run test:watch
+
+# Coverage
+pnpm run test:coverage
+```
+
+Target: **90%+ coverage** on core logic.
 
 ## Release Process
 
-Uses Changesets:
+Uses [Changesets](https://github.com/changesets/changesets):
 
 ```bash
-changeset add  # Follow prompts
-git add . && git commit -m "chore: version bump"
-git push origin main
-# GitHub Action publishes to npm
+# Create a changeset
+pnpm changeset
+
+# Follow prompts (patch/minor/major)
+# Changeset publishes to npm + GitHub Release on merge to main
 ```
-
-## License & Contributions
-
-By contributing, you agree that your contributions will be licensed under the [Salubrious License v1.0](LICENSE), which protects the project's brand and novelty while remaining free for all uses.
 
 ## Code of Conduct
 
 [Contributor Covenant 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/)
+
+By participating, you agree to uphold this code.

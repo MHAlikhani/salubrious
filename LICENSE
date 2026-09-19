@@ -1,7 +1,6 @@
-Salubrious License v1.0
-=======================
+MIT License
 
-Copyright (c) 2026 Mohammad Hossein Alikhani <mohammad.hossein.alikhani@gmail.com>
+Copyright (c) 2026 Mohammad Hossein Alikhani
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -10,50 +9,13 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-1. ATTRIBUTION: The above copyright notice and this permission notice shall be
-   included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-2. BRAND PROTECTION: The names "salubrious", "Salubrious", and the salubrious
-   logo are trademarks of Mohammad Hossein Alikhani. You may not use these
-   marks to endorse or promote products derived from this Software without
-   prior written permission.
-
-3. NOVELTY PRESERVATION: The core concept of "dependency health signals"
-   (abandoned, bus-factor, archived, no-license, risky-license, deprecated,
-   major-drift, new-maintainer, typosquat-risk) as implemented in this
-   Software is the original invention of Mohammad Hossein Alikhani.
-   Derivative works that replicate this specific signal taxonomy must
-   acknowledge the original authorship in their documentation.
-
-4. CONTRIBUTION LICENSE: Any contributions intentionally submitted for
-   inclusion in the Software by you shall be under the terms of this
-   License, without any additional terms or conditions. Notwithstanding
-   the above, nothing herein shall supersede or modify the terms of any
-   separate license agreement you may have executed with the Copyright Holder
-   regarding such contributions.
-
-5. NO WARRANTY: THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
-   KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
----
-
-Summary of Rights:
-------------------
-✅ Free to use commercially
-✅ Free to modify and distribute
-✅ Free to contribute (contributions welcome!)
-✅ Free to sublicense
-✅ Free to sell copies
-
-❌ Cannot use "salubrious" trademark without permission
-❌ Cannot claim original authorship of the signal taxonomy
-❌ Must preserve attribution notices
-❌ No warranty or liability from author
-
-For trademark permissions or licensing inquiries:
-mohammad.hossein.alikhani@gmail.com
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
