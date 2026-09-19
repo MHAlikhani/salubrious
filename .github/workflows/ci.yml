@@ -5,16 +5,24 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [18, 20, 22, 24]
+        # vitest@5 requires node ^22.12 || ^24 || >=26, so older legs cannot run
+        node: [22, 24]
     steps:
       - uses: actions/checkout@v4
+      # `${{ ... }}` must not appear inside YAML flow mappings ({ ... }): the YAML
+      # parser rejects it and the whole workflow fails to start.
       - uses: actions/setup-node@v4
-        with: { node-version: ${{ matrix.node }}, cache: 'pnpm' }
-      - run: corepack enable pnpm && pnpm install --frozen-lockfile
+        with:
+          node-version: ${{ matrix.node }}
+      - run: corepack enable pnpm
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
       - run: pnpm run typecheck
       - run: pnpm run test
       - run: pnpm run build
       - uses: actions/upload-artifact@v4
-        if: matrix.node == '20'
-        with: { name: dist, path: dist/, retention-days: 1 }
+        if: matrix.node == 22
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
