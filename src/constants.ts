@@ -1,4 +1,24 @@
-export const VERSION = '0.0.0';
+import { readFile } from 'node:fs/promises';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+let cachedVersion: string | null = null;
+
+export async function getVersion(): Promise<string> {
+  if (cachedVersion) return cachedVersion;
+  try {
+    const pkgPath = join(__dirname, '..', 'package.json');
+    const pkg = JSON.parse(await readFile(pkgPath, 'utf-8'));
+    cachedVersion = pkg.version ?? '0.0.0';
+  } catch {
+    cachedVersion = '0.0.0';
+  }
+  return cachedVersion;
+}
+
 export const DEFAULT_REGISTRY = 'https://registry.npmjs.org';
 export const DEFAULT_CACHE_DIR = '.salubrious-cache';
 export const SCORE_BASE = 100;
@@ -44,8 +64,8 @@ export const TOP_PACKAGES_FOR_TYPOSQUAT = [
   'prisma', 'typeorm', 'sequelize', 'mongoose', 'knex', 'objection',
   'zod', 'yup', 'joi', 'io-ts', 'runtypes', 'superstruct',
   'axios', 'ky', 'got', 'node-fetch', 'superagent', 'request',
-  'socket.io', 'ws', 'uWebSockets.js', 'primus', 'engine.io',
-  'bull', 'bee-queue', 'agenda', 'cron', 'node-schedule',
+  'socket.io', 'ws', 'http-proxy', 'helmet', 'cors', 'compression',
+  'mongoose', 'sequelize', 'typeorm', 'prisma', 'knex', 'pg', 'mysql2',
   'redis', 'ioredis', 'redis-cluster', 'keyv', 'node-cache',
   'prom-client', 'opentelemetry', 'jaeger-client', 'zipkin',
   'prometheus', 'grafana', 'datadog', 'newrelic', 'elastic-apm'

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util';
 import { analyze } from './index.js';
-import { VERSION } from './constants.js';
+import { getVersion } from './constants.js';
 
 const { values, positionals } = parseArgs({
   args: process.argv.slice(2),
@@ -51,7 +51,8 @@ Options:
 }
 
 if (values.version) {
-  console.log(VERSION);
+  const version = await getVersion();
+  console.log(version);
   process.exit(0);
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "salubrious",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Know the health of your dependency tree before it kills your build.",
   "author": "Mohammad Hossein Alikhani <mohammad.hossein.alikhani@gmail.com>",
   "license": "SEE LICENSE IN LICENSE",
